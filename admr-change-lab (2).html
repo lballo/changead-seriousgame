@@ -1,0 +1,1584 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ADMR Change Lab - Serious Game</title>
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #1e3a5f;
+      --secondary: #ff6b35;
+      --success: #2ecc71;
+      --warning: #f39c12;
+      --danger: #e74c3c;
+      --info: #4a90e2;
+      --light: #f8f9fa;
+      --dark: #2c3e50;
+    }
+
+    body {
+      font-family: 'Open Sans', sans-serif;
+      background: linear-gradient(135deg, #1e3a5f 0%, #4a90e2 100%);
+      min-height: 100vh;
+      padding: 15px;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, #2c5f8d 100%);
+      color: white;
+      padding: 30px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -10%;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .header h1 {
+      font-family: 'Raleway', sans-serif;
+      font-size: 2.5em;
+      font-weight: 800;
+      margin-bottom: 10px;
+      position: relative;
+    }
+
+    .header p {
+      font-size: 1.1em;
+      opacity: 0.9;
+      position: relative;
+    }
+
+    .content {
+      padding: 40px;
+    }
+
+    /* Écran de connexion */
+    .connect-screen {
+      text-align: center;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .connect-title {
+      font-family: 'Raleway', sans-serif;
+      font-size: 2em;
+      color: var(--primary);
+      margin-bottom: 30px;
+    }
+
+    .role-badge {
+      display: inline-block;
+      padding: 8px 20px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.9em;
+      margin-bottom: 15px;
+    }
+
+    .input-group {
+      margin: 30px 0;
+    }
+
+    .input-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--dark);
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1.1em;
+      text-align: center;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: var(--info);
+    }
+
+    .btn {
+      padding: 15px 40px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1em;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: 'Raleway', sans-serif;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--info) 0%, var(--primary) 100%);
+      color: white;
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, var(--secondary) 0%, #ff8c61 100%);
+      color: white;
+    }
+
+    .btn-large {
+      padding: 20px 50px;
+      font-size: 1.3em;
+    }
+
+    /* Fiches de rôles */
+    .role-card {
+      background: linear-gradient(135deg, #ffffff 0%, var(--light) 100%);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+
+    .role-header {
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 20px;
+      border-bottom: 3px solid var(--secondary);
+    }
+
+    .role-emoji {
+      font-size: 4em;
+      margin-bottom: 15px;
+    }
+
+    .role-name {
+      font-family: 'Raleway', sans-serif;
+      font-size: 2em;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+
+    .role-description {
+      color: #666;
+      font-size: 1.1em;
+      line-height: 1.6;
+    }
+
+    .section {
+      margin: 30px 0;
+      padding: 25px;
+      background: white;
+      border-radius: 15px;
+      border-left: 5px solid var(--info);
+    }
+
+    .section-title {
+      font-family: 'Raleway', sans-serif;
+      font-size: 1.4em;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-content {
+      color: #555;
+      line-height: 1.8;
+      font-size: 1.05em;
+    }
+
+    .mission-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .mission-item {
+      padding: 15px;
+      margin: 10px 0;
+      background: var(--light);
+      border-radius: 10px;
+      border-left: 4px solid var(--success);
+      display: flex;
+      align-items: flex-start;
+      gap: 15px;
+    }
+
+    .mission-checkbox {
+      width: 24px;
+      height: 24px;
+      border: 3px solid var(--success);
+      border-radius: 6px;
+      flex-shrink: 0;
+      margin-top: 3px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .mission-checkbox.checked {
+      background: var(--success);
+      position: relative;
+    }
+
+    .mission-checkbox.checked::after {
+      content: '✓';
+      position: absolute;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .mission-text {
+      flex: 1;
+      color: var(--dark);
+      line-height: 1.6;
+    }
+
+    .quote-box {
+      background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+      border-left: 5px solid var(--info);
+      padding: 20px;
+      border-radius: 12px;
+      font-style: italic;
+      color: #555;
+      position: relative;
+      margin: 20px 0;
+    }
+
+    .quote-box::before {
+      content: '"';
+      position: absolute;
+      top: -10px;
+      left: 15px;
+      font-size: 4em;
+      color: var(--info);
+      opacity: 0.3;
+      font-family: Georgia, serif;
+    }
+
+    .warning-box {
+      background: #fff3e0;
+      border-left: 5px solid var(--warning);
+      padding: 20px;
+      border-radius: 12px;
+      margin: 20px 0;
+    }
+
+    .warning-box strong {
+      color: var(--warning);
+      font-size: 1.1em;
+    }
+
+    /* Dashboard Animateur */
+    .dashboard {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 30px;
+    }
+
+    .dashboard-main {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .dashboard-sidebar {
+      background: var(--light);
+      padding: 25px;
+      border-radius: 15px;
+    }
+
+    .phase-indicator {
+      background: linear-gradient(135deg, var(--info) 0%, var(--primary) 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .phase-number {
+      font-size: 3em;
+      font-weight: 800;
+      font-family: 'Raleway', sans-serif;
+    }
+
+    .phase-name {
+      font-size: 1.2em;
+      margin-top: 10px;
+    }
+
+    .timer {
+      font-size: 4em;
+      font-weight: 800;
+      font-family: 'Raleway', sans-serif;
+      color: var(--primary);
+      text-align: center;
+      margin: 30px 0;
+    }
+
+    .timer.warning {
+      color: var(--warning);
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    .participants-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .participant-item {
+      padding: 12px;
+      margin: 8px 0;
+      background: white;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--success);
+    }
+
+    .event-btn {
+      width: 100%;
+      padding: 15px;
+      margin: 10px 0;
+      background: white;
+      border: 2px solid var(--info);
+      border-radius: 10px;
+      color: var(--info);
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .event-btn:hover {
+      background: var(--info);
+      color: white;
+    }
+
+    .event-btn.triggered {
+      background: var(--success);
+      border-color: var(--success);
+      color: white;
+    }
+
+    /* Écran central */
+    .central-screen {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--info) 100%);
+      color: white;
+      padding: 40px;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .gauge-container {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      margin: 40px 0;
+    }
+
+    .gauge {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      padding: 25px;
+      border-radius: 15px;
+    }
+
+    .gauge-label {
+      font-size: 1.2em;
+      font-weight: 700;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .gauge-bar {
+      height: 30px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 15px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .gauge-fill {
+      height: 100%;
+      border-radius: 15px;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .gauge-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+      animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    .gauge-value {
+      font-size: 2em;
+      font-weight: 800;
+      text-align: center;
+      margin-top: 15px;
+      font-family: 'Raleway', sans-serif;
+    }
+
+    .vote-results {
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(10px);
+      padding: 30px;
+      border-radius: 15px;
+      margin: 30px 0;
+    }
+
+    .vote-title {
+      font-size: 1.5em;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    .vote-bar {
+      margin: 15px 0;
+    }
+
+    .vote-bar-label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .vote-bar-fill {
+      height: 20px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 10px;
+    }
+
+    .vote-bar-inner {
+      height: 100%;
+      background: var(--success);
+      border-radius: 10px;
+      transition: width 0.5s ease;
+    }
+
+    /* Écran de vote */
+    .vote-screen {
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .vote-question {
+      font-size: 1.8em;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 40px;
+      font-family: 'Raleway', sans-serif;
+    }
+
+    .vote-options {
+      display: grid;
+      gap: 20px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .vote-option {
+      padding: 25px;
+      background: white;
+      border: 3px solid #e0e0e0;
+      border-radius: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 1.2em;
+      font-weight: 600;
+    }
+
+    .vote-option:hover {
+      border-color: var(--info);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 20px rgba(74, 144, 226, 0.2);
+    }
+
+    .vote-option.selected {
+      background: var(--info);
+      border-color: var(--info);
+      color: white;
+    }
+
+    /* Score final */
+    .final-score {
+      text-align: center;
+      padding: 60px 20px;
+    }
+
+    .score-circle {
+      width: 250px;
+      height: 250px;
+      margin: 40px auto;
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--info) 100%);
+      color: white;
+      box-shadow: 0 20px 60px rgba(30, 58, 95, 0.4);
+      animation: scaleIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    }
+
+    @keyframes scaleIn {
+      0% { transform: scale(0) rotate(-180deg); }
+      100% { transform: scale(1) rotate(0deg); }
+    }
+
+    .score-value {
+      font-size: 4.5em;
+      font-weight: 800;
+      font-family: 'Raleway', sans-serif;
+    }
+
+    .score-label {
+      font-size: 1.2em;
+      opacity: 0.9;
+      margin-top: 10px;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 25px;
+      margin: 50px 0;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #ffffff 0%, var(--light) 100%);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+
+    .stat-icon {
+      font-size: 3em;
+      margin-bottom: 15px;
+    }
+
+    .stat-value {
+      font-size: 2.5em;
+      font-weight: 700;
+      color: var(--primary);
+      font-family: 'Raleway', sans-serif;
+    }
+
+    .stat-label {
+      color: #666;
+      font-size: 1em;
+      margin-top: 10px;
+    }
+
+    .score-method {
+      background: #e3f2fd;
+      padding: 30px;
+      border-radius: 15px;
+      margin: 40px 0;
+      text-align: left;
+    }
+
+    .score-method h3 {
+      color: var(--primary);
+      margin-bottom: 15px;
+      font-family: 'Raleway', sans-serif;
+    }
+
+    .score-method p {
+      color: #555;
+      line-height: 1.8;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .dashboard {
+        grid-template-columns: 1fr;
+      }
+
+      .gauge-container {
+        grid-template-columns: 1fr;
+      }
+
+      .header h1 {
+        font-size: 2em;
+      }
+
+      .content {
+        padding: 20px;
+      }
+    }
+
+    /* Animations */
+    .fade-in {
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .slide-in {
+      animation: slideIn 0.4s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Utilitaires */
+    .text-center { text-align: center; }
+    .mb-2 { margin-bottom: 20px; }
+    .mb-3 { margin-bottom: 30px; }
+    .mt-3 { margin-top: 30px; }
+    .font-bold { font-weight: 700; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // Données du jeu
+    const ROLES = {
+      MANAGER: {
+        id: 'MANAGER',
+        name: 'Manager de Transition',
+        emoji: '👔',
+        color: '#1e3a5f',
+        count: 2
+      },
+      AVOCAT: {
+        id: 'AVOCAT',
+        name: 'Avocat du changement',
+        emoji: '🟢',
+        color: '#2ecc71'
+      },
+      RELAIS: {
+        id: 'RELAIS',
+        name: 'Relais',
+        emoji: '🔵',
+        color: '#4a90e2'
+      },
+      PARTAGE: {
+        id: 'PARTAGE',
+        name: 'Partagé',
+        emoji: '🟡',
+        color: '#f39c12'
+      },
+      NON_CONCERNE: {
+        id: 'NON_CONCERNE',
+        name: 'Non-concerné',
+        emoji: '⚪',
+        color: '#95a5a6'
+      },
+      PASSIF: {
+        id: 'PASSIF',
+        name: 'Passif-Opportuniste',
+        emoji: '🟠',
+        color: '#ff9933'
+      },
+      OPPOSANT: {
+        id: 'OPPOSANT',
+        name: 'Opposant',
+        emoji: '🔴',
+        color: '#e74c3c'
+      },
+      DETRACTEUR: {
+        id: 'DETRACTEUR',
+        name: 'Détracteur',
+        emoji: '⚫',
+        color: '#2c3e50'
+      }
+    };
+
+    const EVENTS = [
+      {
+        id: 1,
+        title: "Bug majeur de l'ancien système",
+        description: "L'ancien outil vient de perdre des données de planning. Urgence !",
+        impact: { confiance: 0, avancement: 15, resistance: -10 }
+      },
+      {
+        id: 2,
+        title: "Budget formation augmenté",
+        description: "La direction débloque +30% de budget pour l'accompagnement",
+        impact: { confiance: 15, avancement: 10, resistance: 0 }
+      },
+      {
+        id: 3,
+        title: "Échec d'une ADMR voisine",
+        description: "Article : une ADMR voisine a échoué sa transition d'outil",
+        impact: { confiance: -10, avancement: 0, resistance: 20 }
+      },
+      {
+        id: 4,
+        title: "Témoignage positif",
+        description: "Vidéo : une asso similaire partage son succès avec ce même outil",
+        impact: { confiance: 15, avancement: 0, resistance: -10 }
+      },
+      {
+        id: 5,
+        title: "Calendrier accéléré",
+        description: "La fédération impose un calendrier accéléré de 2 mois",
+        impact: { confiance: 0, avancement: 0, resistance: 10 }
+      },
+      {
+        id: 6,
+        title: "Accompagnement renforcé",
+        description: "Proposition : 1 coach dédié pendant 6 mois pour l'équipe",
+        impact: { confiance: 10, avancement: 0, resistance: -15 }
+      }
+    ];
+
+    function App() {
+      const [view, setView] = useState('home'); // home, animator, participant, central
+      const [sessionCode, setSessionCode] = useState('');
+      const [participantName, setParticipantName] = useState('');
+      const [role, setRole] = useState(null);
+      const [phase, setPhase] = useState(0);
+      const [gauges, setGauges] = useState({ confiance: 50, avancement: 30, resistance: 50 });
+      const [missions, setMissions] = useState([]);
+      const [timeRemaining, setTimeRemaining] = useState(0);
+      const [participants, setParticipants] = useState([]);
+      const [triggeredEvents, setTriggeredEvents] = useState([]);
+      const [votes, setVotes] = useState({});
+      const [showVote, setShowVote] = useState(false);
+      const [currentVote, setCurrentVote] = useState(null);
+      const [selectedVote, setSelectedVote] = useState(null);
+
+      const generateSessionCode = () => {
+        const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+        setSessionCode(code);
+      };
+
+      const startAsAnimator = () => {
+        generateSessionCode();
+        setView('animator');
+        setPhase(0);
+      };
+
+      const joinAsParticipant = () => {
+        if (!sessionCode || !participantName) return;
+        
+        // Distribution aléatoire des rôles
+        const availableRoles = [
+          'MANAGER', 'MANAGER',
+          'AVOCAT', 'RELAIS', 'PARTAGE', 
+          'NON_CONCERNE', 'PASSIF', 'OPPOSANT'
+        ];
+        const randomRole = availableRoles[Math.floor(Math.random() * availableRoles.length)];
+        setRole(randomRole);
+        
+        // Initialiser les missions
+        const roleMissions = getRoleMissions(randomRole);
+        setMissions(roleMissions.map(m => ({ ...m, completed: false })));
+        
+        setView('participant');
+      };
+
+      const joinAsCentralScreen = () => {
+        if (!sessionCode) return;
+        setView('central');
+      };
+
+      const getRoleMissions = (roleId) => {
+        switch(roleId) {
+          case 'MANAGER':
+            return [
+              { id: 1, text: "Identifier les typologies d'acteurs présentes (sans connaître qui est qui)" },
+              { id: 2, text: "Obtenir au moins 60% de votes favorables au vote final" },
+              { id: 3, text: "Convaincre au moins 1 partagé ou passif-opportuniste" },
+              { id: 4, text: "Créer une alliance avec les Relais" }
+            ];
+          case 'AVOCAT':
+            return [
+              { id: 1, text: "Convaincre au moins 2 personnes de passer d'indécis à favorable" },
+              { id: 2, text: "Proposer une action concrète pour accélérer le projet (en réunion)" },
+              { id: 3, text: "Empêcher les détracteurs de faire échouer le projet : contrer leurs arguments négatifs" }
+            ];
+          case 'RELAIS':
+            return [
+              { id: 1, text: "Donner au moins un argument en faveur de l'outil (en plénière)" },
+              { id: 2, text: "Poser 3 questions de clarification aux managers" },
+              { id: 3, text: "Se positionner en acteur clé du changement : être sollicité par les managers" }
+            ];
+          case 'PARTAGE':
+            return [
+              { id: 1, text: "Obtenir 3 réponses concrètes à vos inquiétudes" },
+              { id: 2, text: "Changer de position au moins 1 fois pendant le jeu" },
+              { id: 3, text: "Poser une question sur l'impact concret de votre travail quotidien" }
+            ];
+          case 'NON_CONCERNE':
+            return [
+              { id: 1, text: "Rester en retrait pendant les 10 premières minutes (parler <30 secondes)" },
+              { id: 2, text: "Vous engager SI on vous donne un rôle : accepter si sollicité" },
+              { id: 3, text: "Poser une question sur 'en quoi ça me concerne vraiment ?'" }
+            ];
+          case 'PASSIF':
+            return [
+              { id: 1, text: "Identifier les intérêts possibles pour vous : trouver au moins 2 avantages personnels" },
+              { id: 2, text: "Vous rallier au camp majoritaire lors du dernier vote" },
+              { id: 3, text: "Négocier un avantage personnel (formation, matériel, horaires...)" }
+            ];
+          case 'OPPOSANT':
+            return [
+              { id: 1, text: "Exprimer votre manque de confiance dans votre capacité à vous adapter et vérifier que l'outil est simple" },
+              { id: 2, text: "Faire remonter 3 risques concrets du projet en plénière" },
+              { id: 3, text: "Menacer de faire appel aux syndicats car vous avez peur de vous faire licencier" }
+            ];
+          case 'DETRACTEUR':
+            return [
+              { id: 1, text: "Discréditer la direction au moins 2 fois (en public ou privé)" },
+              { id: 2, text: "Trouver au moins 2 arguments contre le changement et les exprimer" },
+              { id: 3, text: "Ne jamais vous rallier : rester opposé jusqu'au bout" }
+            ];
+          default:
+            return [];
+        }
+      };
+
+      const toggleMission = (missionId) => {
+        setMissions(missions.map(m => 
+          m.id === missionId ? { ...m, completed: !m.completed } : m
+        ));
+      };
+
+      const triggerEvent = (eventId) => {
+        if (triggeredEvents.includes(eventId)) return;
+        
+        const event = EVENTS.find(e => e.id === eventId);
+        if (event) {
+          setGauges({
+            confiance: Math.max(0, Math.min(100, gauges.confiance + event.impact.confiance)),
+            avancement: Math.max(0, Math.min(100, gauges.avancement + event.impact.avancement)),
+            resistance: Math.max(0, Math.min(100, gauges.resistance + event.impact.resistance))
+          });
+          setTriggeredEvents([...triggeredEvents, eventId]);
+        }
+      };
+
+      const startPhase = (phaseNumber, duration) => {
+        setPhase(phaseNumber);
+        setTimeRemaining(duration);
+      };
+
+      useEffect(() => {
+        if (timeRemaining > 0) {
+          const timer = setTimeout(() => {
+            setTimeRemaining(timeRemaining - 1);
+          }, 1000);
+          return () => clearTimeout(timer);
+        }
+      }, [timeRemaining]);
+
+      const formatTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+      };
+
+      const calculateFinalScore = () => {
+        return Math.round(
+          (gauges.confiance * 0.4) +
+          (gauges.avancement * 0.3) +
+          ((100 - gauges.resistance) * 0.3)
+        );
+      };
+
+      // Écran d'accueil
+      if (view === 'home') {
+        return (
+          <div className="container fade-in">
+            <div className="header">
+              <h1>🎮 ADMR CHANGE LAB</h1>
+              <p>Simulation hybride de gestion du changement</p>
+            </div>
+            <div className="content">
+              <div className="connect-screen">
+                <h2 className="connect-title">Bienvenue</h2>
+                <p style={{ color: '#666', marginBottom: '40px', lineHeight: '1.6' }}>
+                  Choisissez votre rôle pour cette session de formation
+                </p>
+
+                <div style={{ display: 'grid', gap: '20px', marginBottom: '40px' }}>
+                  <button className="btn btn-primary btn-large" onClick={startAsAnimator}>
+                    👨‍🏫 Je suis l'animateur
+                  </button>
+                  
+                  <div style={{ padding: '30px', background: 'var(--light)', borderRadius: '15px' }}>
+                    <h3 style={{ marginBottom: '20px', color: 'var(--primary)' }}>👤 Je suis participant</h3>
+                    <div className="input-group">
+                      <label>Code de session</label>
+                      <input
+                        type="text"
+                        placeholder="Ex: ABC123"
+                        value={sessionCode}
+                        onChange={(e) => setSessionCode(e.target.value.toUpperCase())}
+                        maxLength={6}
+                      />
+                    </div>
+                    <div className="input-group">
+                      <label>Votre prénom</label>
+                      <input
+                        type="text"
+                        placeholder="Entrez votre prénom"
+                        value={participantName}
+                        onChange={(e) => setParticipantName(e.target.value)}
+                        style={{ letterSpacing: 'normal', textTransform: 'none' }}
+                      />
+                    </div>
+                    <button 
+                      className="btn btn-success" 
+                      style={{ width: '100%' }}
+                      onClick={joinAsParticipant}
+                      disabled={!sessionCode || !participantName}
+                    >
+                      Rejoindre la session
+                    </button>
+                  </div>
+
+                  <div style={{ padding: '30px', background: 'var(--light)', borderRadius: '15px' }}>
+                    <h3 style={{ marginBottom: '20px', color: 'var(--primary)' }}>📺 Écran central</h3>
+                    <div className="input-group">
+                      <label>Code de session</label>
+                      <input
+                        type="text"
+                        placeholder="Ex: ABC123"
+                        value={sessionCode}
+                        onChange={(e) => setSessionCode(e.target.value.toUpperCase())}
+                        maxLength={6}
+                      />
+                    </div>
+                    <button 
+                      className="btn btn-primary" 
+                      style={{ width: '100%' }}
+                      onClick={joinAsCentralScreen}
+                      disabled={!sessionCode}
+                    >
+                      Afficher l'écran central
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // Interface Animateur
+      if (view === 'animator') {
+        return (
+          <div className="container fade-in">
+            <div className="header">
+              <h1>🎛️ Dashboard Animateur</h1>
+              <p>Session : <strong>{sessionCode}</strong></p>
+            </div>
+            <div className="content">
+              <div className="dashboard">
+                <div className="dashboard-main">
+                  <div className="phase-indicator">
+                    <div className="phase-number">{phase}/5</div>
+                    <div className="phase-name">
+                      {phase === 0 && "Briefing"}
+                      {phase === 1 && "Réunion d'annonce"}
+                      {phase === 2 && "Négociations"}
+                      {phase === 3 && "Comité de pilotage"}
+                      {phase === 4 && "Résolution"}
+                      {phase === 5 && "Debrief"}
+                    </div>
+                  </div>
+
+                  <div className="timer">{formatTime(timeRemaining)}</div>
+
+                  <div style={{ display: 'grid', gap: '15px' }}>
+                    <button className="btn btn-primary" onClick={() => startPhase(0, 600)}>
+                      Phase 0 : Briefing (10 min)
+                    </button>
+                    <button className="btn btn-primary" onClick={() => startPhase(1, 900)}>
+                      Phase 1 : Réunion d'annonce (15 min)
+                    </button>
+                    <button className="btn btn-primary" onClick={() => startPhase(2, 1500)}>
+                      Phase 2 : Négociations (25 min)
+                    </button>
+                    <button className="btn btn-primary" onClick={() => startPhase(3, 1200)}>
+                      Phase 3 : Comité (20 min)
+                    </button>
+                    <button className="btn btn-primary" onClick={() => startPhase(4, 300)}>
+                      Phase 4 : Résolution (5 min)
+                    </button>
+                    <button className="btn btn-primary" onClick={() => startPhase(5, 1200)}>
+                      Phase 5 : Debrief (20 min)
+                    </button>
+                  </div>
+
+                  <div style={{ marginTop: '40px' }}>
+                    <h3 style={{ marginBottom: '20px', color: 'var(--primary)' }}>📊 Jauges actuelles</h3>
+                    <div className="gauge-container" style={{ gridTemplateColumns: '1fr' }}>
+                      <div>
+                        <div style={{ marginBottom: '10px', fontWeight: '600' }}>💚 Confiance : {gauges.confiance}%</div>
+                        <div style={{ height: '20px', background: '#e0e0e0', borderRadius: '10px', overflow: 'hidden' }}>
+                          <div style={{ height: '100%', width: `${gauges.confiance}%`, background: 'var(--success)', transition: 'width 0.5s' }}></div>
+                        </div>
+                      </div>
+                      <div>
+                        <div style={{ marginBottom: '10px', fontWeight: '600' }}>📈 Avancement : {gauges.avancement}%</div>
+                        <div style={{ height: '20px', background: '#e0e0e0', borderRadius: '10px', overflow: 'hidden' }}>
+                          <div style={{ height: '100%', width: `${gauges.avancement}%`, background: 'var(--info)', transition: 'width 0.5s' }}></div>
+                        </div>
+                      </div>
+                      <div>
+                        <div style={{ marginBottom: '10px', fontWeight: '600' }}>⚠️ Résistance : {gauges.resistance}%</div>
+                        <div style={{ height: '20px', background: '#e0e0e0', borderRadius: '10px', overflow: 'hidden' }}>
+                          <div style={{ height: '100%', width: `${gauges.resistance}%`, background: 'var(--danger)', transition: 'width 0.5s' }}></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="dashboard-sidebar">
+                  <h3 style={{ marginBottom: '20px', color: 'var(--primary)' }}>🎲 Événements</h3>
+                  {EVENTS.map(event => (
+                    <button
+                      key={event.id}
+                      className={`event-btn ${triggeredEvents.includes(event.id) ? 'triggered' : ''}`}
+                      onClick={() => triggerEvent(event.id)}
+                      disabled={triggeredEvents.includes(event.id)}
+                    >
+                      {triggeredEvents.includes(event.id) ? '✓ ' : ''}{event.title}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      // Interface Participant
+      if (view === 'participant') {
+        const roleData = ROLES[role];
+        
+        return (
+          <div className="container fade-in">
+            <div className="header">
+              <h1>🎭 Votre Rôle</h1>
+              <p>{participantName} • Session {sessionCode}</p>
+            </div>
+            <div className="content">
+              <RoleCard role={role} missions={missions} toggleMission={toggleMission} />
+            </div>
+          </div>
+        );
+      }
+
+      // Écran Central
+      if (view === 'central') {
+        return (
+          <div className="central-screen">
+            <div style={{ textAlign: 'center', marginBottom: '40px' }}>
+              <h1 style={{ fontSize: '3em', fontFamily: 'Raleway', fontWeight: '800', marginBottom: '10px' }}>
+                ADMR CHANGE LAB
+              </h1>
+              <p style={{ fontSize: '1.5em', opacity: '0.9' }}>
+                Session {sessionCode} • Phase {phase}/5
+              </p>
+            </div>
+
+            <div className="timer" style={{ color: 'white', fontSize: '5em' }}>
+              {formatTime(timeRemaining)}
+            </div>
+
+            <div className="gauge-container">
+              <div className="gauge">
+                <div className="gauge-label">💚 Confiance</div>
+                <div className="gauge-bar">
+                  <div className="gauge-fill" style={{ width: `${gauges.confiance}%`, background: 'var(--success)' }}></div>
+                </div>
+                <div className="gauge-value">{gauges.confiance}%</div>
+              </div>
+              <div className="gauge">
+                <div className="gauge-label">📈 Avancement</div>
+                <div className="gauge-bar">
+                  <div className="gauge-fill" style={{ width: `${gauges.avancement}%`, background: 'var(--info)' }}></div>
+                </div>
+                <div className="gauge-value">{gauges.avancement}%</div>
+              </div>
+              <div className="gauge">
+                <div className="gauge-label">⚠️ Résistance</div>
+                <div className="gauge-bar">
+                  <div className="gauge-fill" style={{ width: `${gauges.resistance}%`, background: 'var(--danger)' }}></div>
+                </div>
+                <div className="gauge-value">{gauges.resistance}%</div>
+              </div>
+            </div>
+
+            {triggeredEvents.length > 0 && (
+              <div className="vote-results">
+                <div className="vote-title">📢 Dernier événement</div>
+                <p style={{ fontSize: '1.2em', opacity: '0.9' }}>
+                  {EVENTS.find(e => e.id === triggeredEvents[triggeredEvents.length - 1])?.description}
+                </p>
+              </div>
+            )}
+          </div>
+        );
+      }
+
+      return null;
+    }
+
+    // Composant Carte de Rôle
+    function RoleCard({ role, missions, toggleMission }) {
+      const roleData = ROLES[role];
+
+      const getRoleContent = () => {
+        switch(role) {
+          case 'MANAGER':
+            return (
+              <>
+                <div className="section">
+                  <div className="section-title">🎯 Votre mission principale</div>
+                  <div className="section-content">
+                    <p style={{ marginBottom: '15px' }}>
+                      Vous êtes Manager de Transition. Vous devez piloter ce changement avec succès en :
+                    </p>
+                    <ul style={{ marginLeft: '20px', lineHeight: '1.8' }}>
+                      <li>Ralliant les mitigés et passifs-opportunistes</li>
+                      <li>Répondant aux craintes et rassurant</li>
+                      <li>Identifiant les relais sur lesquels vous appuyer</li>
+                      <li>Expliquant les raisons du changement et les étapes</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div className="warning-box">
+                  <strong>⚠️ Contrainte importante :</strong>
+                  <p style={{ marginTop: '10px', lineHeight: '1.6' }}>
+                    Vous disposez d'un <strong>budget limité</strong> : seulement 20 000€ pour la formation et l'accompagnement de toute l'équipe.
+                    Vous devez faire des choix stratégiques sur les investissements.
+                  </p>
+                </div>
+
+                <div className="section">
+                  <div className="section-title">📋 Méthode SCORE pour annoncer le changement</div>
+                  <div className="section-content">
+                    <h4 style={{ color: 'var(--primary)', marginTop: '20px', marginBottom: '10px' }}>
+                      S - Situation (partir du réel)
+                    </h4>
+                    <p style={{ marginBottom: '15px' }}>
+                      "Aujourd'hui, notre gestion des plannings et données RH montre ses limites : plannings qui changent en urgence, 
+                      informations dispersées, charge administrative importante, vision peu claire. Les situations humaines sont plus complexes 
+                      et les exigences réglementaires augmentent."
+                    </p>
+
+                    <h4 style={{ color: 'var(--primary)', marginTop: '20px', marginBottom: '10px' }}>
+                      C - Causes (expliquer pourquoi)
+                    </h4>
+                    <p style={{ marginBottom: '15px' }}>
+                      "Ce n'est pas lié à un manque d'implication. C'est dû à : l'évolution du nombre de bénéficiaires et salariés, 
+                      la multiplication des contraintes réglementaires, des outils actuels inadaptés au volume d'activité, 
+                      et des modes de fonctionnement construits progressivement sans harmonisation."
+                    </p>
+
+                    <h4 style={{ color: 'var(--primary)', marginTop: '20px', marginBottom: '10px' }}>
+                      O - Objectifs (dire où l'on va)
+                    </h4>
+                    <p style={{ marginBottom: '15px' }}>
+                      <strong>Court terme :</strong> Sécuriser les plannings, réduire les erreurs, soulager la charge administrative.<br/>
+                      <strong>Moyen terme :</strong> Gagner en lisibilité, faciliter le partage d'informations, améliorer la coordination.<br/>
+                      <strong>Long terme :</strong> Outil fiable et commun, soutien à la qualité de vie au travail, focus sur le cœur de mission.
+                    </p>
+
+                    <h4 style={{ color: 'var(--primary)', marginTop: '20px', marginBottom: '10px' }}>
+                      R - Ressources (rassurer sur les moyens)
+                    </h4>
+                    <p style={{ marginBottom: '15px' }}>
+                      "Moyens concrets : temps de formation dédiés, accompagnement des responsables, phase de prise en main progressive, 
+                      référents identifiés, appui RH et technique. Il ne s'agit pas de faire plus, mais de donner des outils mieux adaptés."
+                    </p>
+
+                    <h4 style={{ color: 'var(--primary)', marginTop: '20px', marginBottom: '10px' }}>
+                      E - Effets (dire ce que ça change)
+                    </h4>
+                    <p>
+                      "Concrètement : plannings plus stables, réduction des urgences, meilleure visibilité pour les salariés, 
+                      communication plus fluide, diminution de la charge mentale administrative. L'objectif est d'améliorer le quotidien."
+                    </p>
+                  </div>
+                </div>
+
+                <div className="section">
+                  <div className="section-title">🎬 Structure de votre intervention</div>
+                  <div className="section-content">
+                    <p style={{ marginBottom: '15px', fontWeight: '600' }}>
+                      Avant de commencer, définissez et annoncez le cadre :
+                    </p>
+                    <ol style={{ marginLeft: '20px', lineHeight: '1.8' }}>
+                      <li><strong>Phase 1 - Exposition :</strong> Vous présentez le changement (durée à définir)</li>
+                      <li><strong>Phase 2 - Questions/Réponses :</strong> Vous ouvrez le dialogue (durée à définir)</li>
+                    </ol>
+                    <p style={{ marginTop: '15px', fontStyle: 'italic', color: '#666' }}>
+                      💡 Conseil : Sortez de la pièce avec votre binôme pour vous mettre d'accord sur votre stratégie avant de commencer.
+                    </p>
+                  </div>
+                </div>
+              </>
+            );
+
+          case 'AVOCAT':
+            return (
+              <>
+                <div className="section">
+                  <div className="section-title">🧠 Votre psychologie</div>
+                  <div className="section-content">
+                    <p>
+                      Vous êtes <strong>enthousiaste et impatient</strong>. Vous voulez montrer que dans un monde changeant, 
+                      le changement est nécessaire. Vous avez une intention cachée : vous montrer indispensable et être bien vu de la direction.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="section">
+                  <div className="section-title">😤 Votre frustration actuelle</div>
+                  <div className="section-content">
+                    <p>
+                      L'outil actuel vous fait perdre un temps fou : vous devez <strong>resaisir les mêmes données au moins 5 fois</strong> ! 
+                      Ce n'est plus tenable. Ce changement est une aubaine pour vous.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="quote-box">
+                  💬 "Franchement, c'est une super opportunité ! On perd du temps à débattre."
+                </div>
+
+                <div className="warning-box">
+                  <strong>⚠️ Attention :</strong> Votre enthousiasme peut écraser les autres. 
+                  Restez attentif à ne pas minimiser les inquiétudes légitimes.
+                </div>
+              </>
+            );
+
+          case 'RELAIS':
+            return (
+              <>
+                <div className="section">
+                  <div className="section-title">🧠 Votre psychologie</div>
+                  <div className="section-content">
+                    <p>
+                      Vous êtes <strong>respecté par les équipes</strong> et <strong>adepte au changement</strong>. 
+                      Vous aimez vous renseigner sur les nouveaux outils et êtes curieux des innovations. 
+                      Vous n'avez pas besoin d'être convaincu : vous êtes déjà favorable au projet !
+                    </p>
+                  </div>
+                </div>
+
+                <div className="section">
+                  <div className="section-title">🎯 Votre ambition</div>
+                  <div className="section-content">
+                    <p>
+                      Vous voulez <strong>montrer aux managers que vous pouvez être un acteur clé</strong> du changement. 
+                      C'est l'occasion pour vous de vous positionner comme un <strong>leader d'opinion</strong> 
+                      et de valoriser votre expertise auprès de la direction.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="quote-box">
+                  💬 "Je peux aider à expliquer aux équipes. Je suis convaincu que c'est la bonne direction."
+                </div>
+
+                <div className="warning-box">
+                  <strong>💡 Votre force :</strong> Vous êtes la clé du changement car vous combinez 
+                  la crédibilité auprès des équipes ET l'adhésion au projet. Les managers ont besoin de vous !
+                </div>
+              </>
+            );
+
+          case 'PARTAGE':
+            return (
+              <>
+                <div className="section">
+                  <div className="section-title">🧠 Votre psychologie</div>
+                  <div className="section-content">
+                    <p>
+                      Vous avez une <strong>posture ambiguë</strong>. Vous n'êtes pas contre le changement, 
+                      mais vous avez <strong>peur de ne pas réussir à vous adapter</strong> et de perdre votre légitimité.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="section">
+                  <div className="section-title">😰 Vos craintes</div>
+                  <div className="section-content">
+                    <p>
+                      Vous êtes <strong>proche de la retraite</strong>. Cela fait <strong>10 ans</strong> que vous vous êtes habitué 
+                      à l'ancien logiciel. Recommencer à zéro vous angoisse. Cela dit, vous admettez que le logiciel actuel 
+                      mérite d'être changé.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="quote-box">
+                  💬 "Sur le principe, oui… mais concrètement, comment on fait ?"
+                </div>
+
+                <div className="warning-box">
+                  <strong>💡 Votre évolution :</strong> Vous pouvez basculer d'un côté ou de l'autre selon 
+                  les garanties et le soutien concret que vous obtiendrez.
+                </div>
+              </>
+            );
+
+          case 'NON_CONCERNE':
+            return (
+              <>
+                <div className="section">
+                  <div className="section-title">🧠 Votre psychologie</div>
+                  <div className="section-content">
+                    <p>
+                      Vous vous sentez <strong>peu impacté et peu engagé</strong>. Ce changement ne vous semble pas vraiment 
+                      vous concerner. Vous restez en retrait, observateur.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="quote-box">
+                  💬 "Honnêtement, ça ne me concerne pas vraiment."
+                </div>
+
+                <div className="warning-box">
+                  <strong>⚠️ Attention :</strong> Si vous êtes négligé, vous pourriez devenir résistant. 
+                  Mais si on vous sollicite avec un rôle précis, vous pouvez vous engager.
+                </div>
+              </>
+            );
+
+          case 'PASSIF':
+            return (
+              <>
+                <div className="section">
+                  <div className="section-title">🧠 Votre psychologie</div>
+                  <div className="section-content">
+                    <p>
+                      Vous <strong>attendez de voir</strong> comment les choses évoluent. 
+                      Vous vous adapterez si ça vous arrange. Vous n'êtes pas fiable dans la durée, 
+                      mais vous savez identifier vos intérêts.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="quote-box">
+                  💬 "On verra bien… si ça me simplifie la vie, pourquoi pas."
+                </div>
+
+                <div className="warning-box">
+                  <strong>💡 Votre stratégie :</strong> Vous cherchez les avantages personnels que vous pourriez 
+                  tirer de ce changement. Vous vous rallierez au camp gagnant.
+                </div>
+              </>
+            );
+
+          case 'OPPOSANT':
+            return (
+              <>
+                <div className="section">
+                  <div className="section-title">🧠 Votre psychologie</div>
+                  <div className="section-content">
+                    <p>
+                      Vous <strong>manquez de confiance</strong> dans votre capacité à vous adapter au nouvel outil. 
+                      Vous voulez vérifier qu'il est simple à utiliser et que la direction a prévu les ressources nécessaires.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="section">
+                  <div className="section-title">😨 Votre peur profonde</div>
+                  <div className="section-content">
+                    <p>
+                      Vous avez <strong>peur de vous faire licencier</strong> si vous ne maîtrisez pas le nouvel outil. 
+                      Cette crainte est si forte que vous êtes prêt à menacer de faire appel aux syndicats.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="quote-box">
+                  💬 "On a déjà essayé, ça n'a jamais marché."
+                </div>
+
+                <div className="warning-box">
+                  <strong>💡 Votre potentiel :</strong> Si vos craintes sont vraiment entendues et adressées, 
+                  vous pouvez devenir un allié précieux grâce à votre expérience.
+                </div>
+              </>
+            );
+
+          case 'DETRACTEUR':
+            return (
+              <>
+                <div className="section">
+                  <div className="section-title">🧠 Votre psychologie</div>
+                  <div className="section-content">
+                    <p>
+                      Vous êtes <strong>virulent et critique ouvertement</strong>. Vous disqualifiez la direction et 
+                      nourrissez les tensions. Vous êtes très énergivore pour les managers.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="section">
+                  <div className="section-title">✊ Votre position syndicale</div>
+                  <div className="section-content">
+                    <p>
+                      <strong>Information importante :</strong> Vous faites partie des <strong>syndicats</strong>. 
+                      Cette position vous donne une légitimité pour contester et mobiliser d'autres collaborateurs.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="quote-box">
+                  💬 "C'est encore une décision hors sol."
+                </div>
+
+                <div className="warning-box">
+                  <strong>⚠️ Votre rôle :</strong> Vous ne devez jamais vous rallier, sauf si des arguments 
+                  TRÈS solides vous convainquent (ce qui est peu probable). Restez critique jusqu'au bout.
+                </div>
+              </>
+            );
+
+          default:
+            return null;
+        }
+      };
+
+      return (
+        <div className="role-card slide-in">
+          <div className="role-header">
+            <div className="role-emoji">{roleData.emoji}</div>
+            <h2 className="role-name">{roleData.name}</h2>
+          </div>
+
+          {getRoleContent()}
+
+          <div className="section">
+            <div className="section-title">🎯 Vos missions secrètes</div>
+            <div className="section-content">
+              <p style={{ marginBottom: '20px', color: '#666' }}>
+                Accomplissez ces missions pour réussir votre rôle. Cochez-les au fur et à mesure.
+              </p>
+              <ul className="mission-list">
+                {missions.map(mission => (
+                  <li key={mission.id} className="mission-item">
+                    <div
+                      className={`mission-checkbox ${mission.completed ? 'checked' : ''}`}
+                      onClick={() => toggleMission(mission.id)}
+                    ></div>
+                    <div className="mission-text">{mission.text}</div>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          <div style={{ marginTop: '30px', padding: '20px', background: 'var(--light)', borderRadius: '12px', textAlign: 'center' }}>
+            <p style={{ color: '#666', marginBottom: '10px' }}>
+              Missions accomplies : <strong>{missions.filter(m => m.completed).length}/{missions.length}</strong>
+            </p>
+            <div style={{ height: '10px', background: '#e0e0e0', borderRadius: '5px', overflow: 'hidden' }}>
+              <div style={{
+                height: '100%',
+                width: `${(missions.filter(m => m.completed).length / missions.length) * 100}%`,
+                background: 'var(--success)',
+                transition: 'width 0.5s ease'
+              }}></div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Rendu de l'application
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>
