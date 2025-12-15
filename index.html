@@ -3,11 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ADMR Change Lab - Serious Game</title>
+  <title>ADMR Change Lab - Synchronisé</title>
   <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+  
   <style>
     * {
       margin: 0;
@@ -80,7 +85,6 @@
       padding: 40px;
     }
 
-    /* Écran de connexion */
     .connect-screen {
       text-align: center;
       max-width: 500px;
@@ -92,15 +96,6 @@
       font-size: 2em;
       color: var(--primary);
       margin-bottom: 30px;
-    }
-
-    .role-badge {
-      display: inline-block;
-      padding: 8px 20px;
-      border-radius: 20px;
-      font-weight: 600;
-      font-size: 0.9em;
-      margin-bottom: 15px;
     }
 
     .input-group {
@@ -168,7 +163,6 @@
       font-size: 1.3em;
     }
 
-    /* Fiches de rôles */
     .role-card {
       background: linear-gradient(135deg, #ffffff 0%, var(--light) 100%);
       border-radius: 20px;
@@ -195,12 +189,6 @@
       font-weight: 800;
       color: var(--primary);
       margin-bottom: 10px;
-    }
-
-    .role-description {
-      color: #666;
-      font-size: 1.1em;
-      line-height: 1.6;
     }
 
     .section {
@@ -312,7 +300,6 @@
       font-size: 1.1em;
     }
 
-    /* Dashboard Animateur */
     .dashboard {
       display: grid;
       grid-template-columns: 2fr 1fr;
@@ -371,29 +358,6 @@
       50% { opacity: 0.5; }
     }
 
-    .participants-list {
-      list-style: none;
-      padding: 0;
-    }
-
-    .participant-item {
-      padding: 12px;
-      margin: 8px 0;
-      background: white;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-    }
-
-    .status-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--success);
-    }
-
     .event-btn {
       width: 100%;
       padding: 15px;
@@ -418,7 +382,6 @@
       color: white;
     }
 
-    /* Écran central */
     .central-screen {
       background: linear-gradient(135deg, var(--primary) 0%, var(--info) 100%);
       color: white;
@@ -491,179 +454,78 @@
       font-family: 'Raleway', sans-serif;
     }
 
-    .vote-results {
-      background: rgba(255,255,255,0.1);
+    .event-display {
+      background: rgba(255,255,255,0.15);
       backdrop-filter: blur(10px);
-      padding: 30px;
-      border-radius: 15px;
+      padding: 40px;
+      border-radius: 20px;
       margin: 30px 0;
+      border: 3px solid rgba(255,255,255,0.3);
+      animation: slideIn 0.5s ease;
     }
 
-    .vote-title {
-      font-size: 1.5em;
-      font-weight: 700;
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .event-icon {
+      font-size: 4em;
+      text-align: center;
       margin-bottom: 20px;
     }
 
-    .vote-bar {
-      margin: 15px 0;
-    }
-
-    .vote-bar-label {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-
-    .vote-bar-fill {
-      height: 20px;
-      background: rgba(255,255,255,0.3);
-      border-radius: 10px;
-    }
-
-    .vote-bar-inner {
-      height: 100%;
-      background: var(--success);
-      border-radius: 10px;
-      transition: width 0.5s ease;
-    }
-
-    /* Écran de vote */
-    .vote-screen {
-      text-align: center;
-      padding: 40px 20px;
-    }
-
-    .vote-question {
-      font-size: 1.8em;
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 40px;
-      font-family: 'Raleway', sans-serif;
-    }
-
-    .vote-options {
-      display: grid;
-      gap: 20px;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    .vote-option {
-      padding: 25px;
-      background: white;
-      border: 3px solid #e0e0e0;
-      border-radius: 15px;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      font-size: 1.2em;
-      font-weight: 600;
-    }
-
-    .vote-option:hover {
-      border-color: var(--info);
-      transform: translateY(-3px);
-      box-shadow: 0 8px 20px rgba(74, 144, 226, 0.2);
-    }
-
-    .vote-option.selected {
-      background: var(--info);
-      border-color: var(--info);
-      color: white;
-    }
-
-    /* Score final */
-    .final-score {
-      text-align: center;
-      padding: 60px 20px;
-    }
-
-    .score-circle {
-      width: 250px;
-      height: 250px;
-      margin: 40px auto;
-      border-radius: 50%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--info) 100%);
-      color: white;
-      box-shadow: 0 20px 60px rgba(30, 58, 95, 0.4);
-      animation: scaleIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    }
-
-    @keyframes scaleIn {
-      0% { transform: scale(0) rotate(-180deg); }
-      100% { transform: scale(1) rotate(0deg); }
-    }
-
-    .score-value {
-      font-size: 4.5em;
+    .event-title {
+      font-size: 2em;
       font-weight: 800;
-      font-family: 'Raleway', sans-serif;
-    }
-
-    .score-label {
-      font-size: 1.2em;
-      opacity: 0.9;
-      margin-top: 10px;
-    }
-
-    .stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 25px;
-      margin: 50px 0;
-    }
-
-    .stat-card {
-      background: linear-gradient(135deg, #ffffff 0%, var(--light) 100%);
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
       text-align: center;
-    }
-
-    .stat-icon {
-      font-size: 3em;
-      margin-bottom: 15px;
-    }
-
-    .stat-value {
-      font-size: 2.5em;
-      font-weight: 700;
-      color: var(--primary);
+      margin-bottom: 20px;
       font-family: 'Raleway', sans-serif;
     }
 
-    .stat-label {
-      color: #666;
-      font-size: 1em;
-      margin-top: 10px;
-    }
-
-    .score-method {
-      background: #e3f2fd;
-      padding: 30px;
-      border-radius: 15px;
-      margin: 40px 0;
-      text-align: left;
-    }
-
-    .score-method h3 {
-      color: var(--primary);
-      margin-bottom: 15px;
-      font-family: 'Raleway', sans-serif;
-    }
-
-    .score-method p {
-      color: #555;
+    .event-announcement {
+      background: rgba(255,255,255,0.2);
+      padding: 25px;
+      border-radius: 12px;
+      margin: 20px 0;
       line-height: 1.8;
+      font-size: 1.1em;
     }
 
-    /* Responsive */
+    .event-impacts {
+      margin-top: 25px;
+    }
+
+    .event-impacts-title {
+      font-weight: 700;
+      font-size: 1.2em;
+      margin-bottom: 15px;
+    }
+
+    .event-impacts-list {
+      list-style: none;
+      padding: 0;
+    }
+
+    .event-impacts-list li {
+      padding: 10px;
+      margin: 8px 0;
+      background: rgba(255,255,255,0.15);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     @media (max-width: 768px) {
       .dashboard {
         grid-template-columns: 1fr;
@@ -682,26 +544,6 @@
       }
     }
 
-    /* Animations */
-    .fade-in {
-      animation: fadeIn 0.5s ease;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .slide-in {
-      animation: slideIn 0.4s ease;
-    }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-20px); }
-      to { opacity: 1; transform: translateX(0); }
-    }
-
-    /* Utilitaires */
     .text-center { text-align: center; }
     .mb-2 { margin-bottom: 20px; }
     .mb-3 { margin-bottom: 30px; }
@@ -713,7 +555,24 @@
   <div id="root"></div>
 
   <script type="text/babel">
-    const { useState, useEffect, useRef } = React;
+    const { useState, useEffect } = React;
+
+    // Configuration Firebase - À REMPLACER par votre propre config
+    const firebaseConfig = {
+  apiKey: "AIzaSyA-OTMgopeuDgDqKsAtaZTDLw9OPDX59Uc",
+  authDomain: "admr-change-lab.firebaseapp.com",
+  databaseURL: "https://admr-change-lab-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "admr-change-lab",
+  storageBucket: "admr-change-lab.firebasestorage.app",
+  messagingSenderId: "942605688032",
+  appId: "1:942605688032:web:efc6ab4e54843065824485"
+};
+
+    // Initialiser Firebase
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const database = firebase.database();
 
     // Données du jeu
     const ROLES = {
@@ -771,73 +630,124 @@
     const EVENTS = [
       {
         id: 1,
+        icon: "🔥",
         title: "Bug majeur de l'ancien système",
-        description: "L'ancien outil vient de perdre des données de planning. Urgence !",
-        impact: { confiance: 0, avancement: 15, resistance: -10 }
+        shortDesc: "L'ancien outil vient de perdre des données de planning. Urgence !",
+        announcement: "Information urgente : l'ancien système de gestion des plannings vient de rencontrer un bug. Une partie des données de la semaine prochaine est manquante ou incohérente. Les équipes doivent reconstituer les plannings pour éviter des absences d'intervenants et des retours négatifs des bénéficiaires. La direction demande une sécurisation immédiate.",
+        impacts: [
+          "Montée du stress opérationnel",
+          "Travail en urgence",
+          "Risque d'erreurs",
+          "Tensions avec les bénéficiaires et familles"
+        ],
+        gaugeImpact: { confiance: 0, avancement: 15, resistance: -10 }
       },
       {
         id: 2,
-        title: "Budget formation augmenté",
-        description: "La direction débloque +30% de budget pour l'accompagnement",
-        impact: { confiance: 15, avancement: 10, resistance: 0 }
+        icon: "💰",
+        title: "Budget formation augmenté de 30%",
+        shortDesc: "La direction débloque +30% de budget pour l'accompagnement",
+        announcement: "La direction valide une augmentation de 30 % du budget formation et accompagnement pour le déploiement du nouvel outil. Cela permettra davantage de sessions, des formats adaptés aux contraintes terrain et un soutien renforcé pour la prise en main.",
+        impacts: [
+          "Baisse des inquiétudes liées à la montée en compétences",
+          "Meilleure acceptation du changement",
+          "Sentiment de reconnaissance et de soutien"
+        ],
+        gaugeImpact: { confiance: 15, avancement: 10, resistance: 0 }
       },
       {
         id: 3,
-        title: "Échec d'une ADMR voisine",
-        description: "Article : une ADMR voisine a échoué sa transition d'outil",
-        impact: { confiance: -10, avancement: 0, resistance: 20 }
+        icon: "📰",
+        title: "Article négatif : échec dans une ADMR voisine",
+        shortDesc: "Article : une ADMR voisine a échoué sa transition d'outil",
+        announcement: "Un article circule concernant une ADMR voisine qui a déployé le même outil. La transition s'est révélée difficile : surcharge de travail, manque de formation, désorganisation temporaire. L'information commence à circuler sur le terrain.",
+        impacts: [
+          "Augmentation des craintes",
+          "Doutes sur la réussite du projet",
+          "Discussions informelles et inquiétudes accrues"
+        ],
+        gaugeImpact: { confiance: -10, avancement: 0, resistance: 20 }
       },
       {
         id: 4,
-        title: "Témoignage positif",
-        description: "Vidéo : une asso similaire partage son succès avec ce même outil",
-        impact: { confiance: 15, avancement: 0, resistance: -10 }
+        icon: "⭐",
+        title: "Témoignage positif d'une autre association",
+        shortDesc: "Vidéo : une asso similaire partage son succès avec ce même outil",
+        announcement: "Une association similaire à la vôtre partage un retour d'expérience positif sur le nouvel outil. Après plusieurs mois, elle constate des plannings plus stables, une meilleure visibilité et une charge administrative réduite. Elle insiste sur l'importance de l'accompagnement et du temps accordé à la transition.",
+        impacts: [
+          "Restauration de la confiance",
+          "Projection plus concrète des bénéfices",
+          "Diminution des inquiétudes"
+        ],
+        gaugeImpact: { confiance: 15, avancement: 0, resistance: -10 }
       },
       {
         id: 5,
-        title: "Calendrier accéléré",
-        description: "La fédération impose un calendrier accéléré de 2 mois",
-        impact: { confiance: 0, avancement: 0, resistance: 10 }
+        icon: "⏰",
+        title: "Calendrier de déploiement accéléré",
+        shortDesc: "La fédération impose un calendrier accéléré de 2 mois",
+        announcement: "La fédération annonce une contrainte nouvelle : le calendrier de déploiement est avancé de deux mois. La transition prévue sur six mois devra se faire en quatre mois pour des raisons externes et non négociables.",
+        impacts: [
+          "Pression temporelle accrue",
+          "Sentiment de précipitation",
+          "Crainte d'une surcharge de travail"
+        ],
+        gaugeImpact: { confiance: 0, avancement: 0, resistance: 10 }
       },
       {
         id: 6,
-        title: "Accompagnement renforcé",
-        description: "Proposition : 1 coach dédié pendant 6 mois pour l'équipe",
-        impact: { confiance: 10, avancement: 0, resistance: -15 }
+        icon: "🎓",
+        title: "Accompagnement renforcé sur 6 mois",
+        shortDesc: "Proposition : 1 coach dédié pendant 6 mois pour l'équipe",
+        announcement: "Afin de sécuriser le déploiement, un accompagnement renforcé est validé : des référents identifiés, un support prioritaire, et un accompagnement terrain sur six mois. L'objectif est d'éviter que la transition repose uniquement sur l'énergie des équipes.",
+        impacts: [
+          "Réduction du sentiment d'isolement",
+          "Meilleure projection dans la transition",
+          "Climat plus sécurisant"
+        ],
+        gaugeImpact: { confiance: 10, avancement: 0, resistance: -15 }
       }
     ];
 
     function App() {
-      const [view, setView] = useState('home'); // home, animator, participant, central
+      const [view, setView] = useState('home');
       const [sessionCode, setSessionCode] = useState('');
       const [participantName, setParticipantName] = useState('');
       const [role, setRole] = useState(null);
-      const [phase, setPhase] = useState(0);
-      const [gauges, setGauges] = useState({ confiance: 50, avancement: 30, resistance: 50 });
       const [missions, setMissions] = useState([]);
-      const [timeRemaining, setTimeRemaining] = useState(0);
-      const [participants, setParticipants] = useState([]);
-      const [triggeredEvents, setTriggeredEvents] = useState([]);
-      const [votes, setVotes] = useState({});
-      const [showVote, setShowVote] = useState(false);
-      const [currentVote, setCurrentVote] = useState(null);
-      const [selectedVote, setSelectedVote] = useState(null);
+
+      // État synchronisé
+      const [gameState, setGameState] = useState({
+        phase: 0,
+        timeRemaining: 0,
+        gauges: { confiance: 50, avancement: 30, resistance: 50 },
+        currentEvent: null,
+        triggeredEvents: []
+      });
 
       const generateSessionCode = () => {
         const code = Math.random().toString(36).substring(2, 8).toUpperCase();
         setSessionCode(code);
+        return code;
       };
 
       const startAsAnimator = () => {
-        generateSessionCode();
+        const code = generateSessionCode();
+        // Initialiser la session dans Firebase
+        database.ref(`sessions/${code}`).set({
+          phase: 0,
+          timeRemaining: 0,
+          gauges: { confiance: 50, avancement: 30, resistance: 50 },
+          currentEvent: null,
+          triggeredEvents: [],
+          createdAt: Date.now()
+        });
         setView('animator');
-        setPhase(0);
       };
 
       const joinAsParticipant = () => {
         if (!sessionCode || !participantName) return;
         
-        // Distribution aléatoire des rôles
         const availableRoles = [
           'MANAGER', 'MANAGER',
           'AVOCAT', 'RELAIS', 'PARTAGE', 
@@ -846,7 +756,6 @@
         const randomRole = availableRoles[Math.floor(Math.random() * availableRoles.length)];
         setRole(randomRole);
         
-        // Initialiser les missions
         const roleMissions = getRoleMissions(randomRole);
         setMissions(roleMissions.map(m => ({ ...m, completed: false })));
         
@@ -857,6 +766,38 @@
         if (!sessionCode) return;
         setView('central');
       };
+
+      // Écouter les changements dans Firebase
+      useEffect(() => {
+        if (sessionCode && (view === 'animator' || view === 'central' || view === 'participant')) {
+          const sessionRef = database.ref(`sessions/${sessionCode}`);
+          
+          sessionRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+              setGameState({
+                phase: data.phase || 0,
+                timeRemaining: data.timeRemaining || 0,
+                gauges: data.gauges || { confiance: 50, avancement: 30, resistance: 50 },
+                currentEvent: data.currentEvent || null,
+                triggeredEvents: data.triggeredEvents || []
+              });
+            }
+          });
+
+          return () => sessionRef.off();
+        }
+      }, [sessionCode, view]);
+
+      // Timer automatique
+      useEffect(() => {
+        if (view === 'animator' && gameState.timeRemaining > 0) {
+          const timer = setTimeout(() => {
+            database.ref(`sessions/${sessionCode}/timeRemaining`).set(gameState.timeRemaining - 1);
+          }, 1000);
+          return () => clearTimeout(timer);
+        }
+      }, [gameState.timeRemaining, view, sessionCode]);
 
       const getRoleMissions = (roleId) => {
         switch(roleId) {
@@ -920,46 +861,34 @@
         ));
       };
 
-      const triggerEvent = (eventId) => {
-        if (triggeredEvents.includes(eventId)) return;
-        
-        const event = EVENTS.find(e => e.id === eventId);
-        if (event) {
-          setGauges({
-            confiance: Math.max(0, Math.min(100, gauges.confiance + event.impact.confiance)),
-            avancement: Math.max(0, Math.min(100, gauges.avancement + event.impact.avancement)),
-            resistance: Math.max(0, Math.min(100, gauges.resistance + event.impact.resistance))
-          });
-          setTriggeredEvents([...triggeredEvents, eventId]);
-        }
-      };
-
       const startPhase = (phaseNumber, duration) => {
-        setPhase(phaseNumber);
-        setTimeRemaining(duration);
+        database.ref(`sessions/${sessionCode}`).update({
+          phase: phaseNumber,
+          timeRemaining: duration
+        });
       };
 
-      useEffect(() => {
-        if (timeRemaining > 0) {
-          const timer = setTimeout(() => {
-            setTimeRemaining(timeRemaining - 1);
-          }, 1000);
-          return () => clearTimeout(timer);
-        }
-      }, [timeRemaining]);
+      const triggerEvent = (eventId) => {
+        const event = EVENTS.find(e => e.id === eventId);
+        if (!event || gameState.triggeredEvents.includes(eventId)) return;
+
+        const newGauges = {
+          confiance: Math.max(0, Math.min(100, gameState.gauges.confiance + event.gaugeImpact.confiance)),
+          avancement: Math.max(0, Math.min(100, gameState.gauges.avancement + event.gaugeImpact.avancement)),
+          resistance: Math.max(0, Math.min(100, gameState.gauges.resistance + event.gaugeImpact.resistance))
+        };
+
+        database.ref(`sessions/${sessionCode}`).update({
+          currentEvent: event,
+          triggeredEvents: [...gameState.triggeredEvents, eventId],
+          gauges: newGauges
+        });
+      };
 
       const formatTime = (seconds) => {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${mins}:${secs.toString().padStart(2, '0')}`;
-      };
-
-      const calculateFinalScore = () => {
-        return Math.round(
-          (gauges.confiance * 0.4) +
-          (gauges.avancement * 0.3) +
-          ((100 - gauges.resistance) * 0.3)
-        );
       };
 
       // Écran d'accueil
@@ -968,7 +897,7 @@
           <div className="container fade-in">
             <div className="header">
               <h1>🎮 ADMR CHANGE LAB</h1>
-              <p>Simulation hybride de gestion du changement</p>
+              <p>Simulation hybride de gestion du changement - Version Synchronisée</p>
             </div>
             <div className="content">
               <div className="connect-screen">
@@ -1054,18 +983,18 @@
               <div className="dashboard">
                 <div className="dashboard-main">
                   <div className="phase-indicator">
-                    <div className="phase-number">{phase}/5</div>
+                    <div className="phase-number">{gameState.phase}/5</div>
                     <div className="phase-name">
-                      {phase === 0 && "Briefing"}
-                      {phase === 1 && "Réunion d'annonce"}
-                      {phase === 2 && "Négociations"}
-                      {phase === 3 && "Comité de pilotage"}
-                      {phase === 4 && "Résolution"}
-                      {phase === 5 && "Debrief"}
+                      {gameState.phase === 0 && "Briefing"}
+                      {gameState.phase === 1 && "Réunion d'annonce"}
+                      {gameState.phase === 2 && "Négociations"}
+                      {gameState.phase === 3 && "Comité de pilotage"}
+                      {gameState.phase === 4 && "Résolution"}
+                      {gameState.phase === 5 && "Debrief"}
                     </div>
                   </div>
 
-                  <div className="timer">{formatTime(timeRemaining)}</div>
+                  <div className="timer">{formatTime(gameState.timeRemaining)}</div>
 
                   <div style={{ display: 'grid', gap: '15px' }}>
                     <button className="btn btn-primary" onClick={() => startPhase(0, 600)}>
@@ -1092,21 +1021,21 @@
                     <h3 style={{ marginBottom: '20px', color: 'var(--primary)' }}>📊 Jauges actuelles</h3>
                     <div className="gauge-container" style={{ gridTemplateColumns: '1fr' }}>
                       <div>
-                        <div style={{ marginBottom: '10px', fontWeight: '600' }}>💚 Confiance : {gauges.confiance}%</div>
+                        <div style={{ marginBottom: '10px', fontWeight: '600' }}>💚 Confiance : {gameState.gauges.confiance}%</div>
                         <div style={{ height: '20px', background: '#e0e0e0', borderRadius: '10px', overflow: 'hidden' }}>
-                          <div style={{ height: '100%', width: `${gauges.confiance}%`, background: 'var(--success)', transition: 'width 0.5s' }}></div>
+                          <div style={{ height: '100%', width: `${gameState.gauges.confiance}%`, background: 'var(--success)', transition: 'width 0.5s' }}></div>
                         </div>
                       </div>
                       <div>
-                        <div style={{ marginBottom: '10px', fontWeight: '600' }}>📈 Avancement : {gauges.avancement}%</div>
+                        <div style={{ marginBottom: '10px', fontWeight: '600' }}>📈 Avancement : {gameState.gauges.avancement}%</div>
                         <div style={{ height: '20px', background: '#e0e0e0', borderRadius: '10px', overflow: 'hidden' }}>
-                          <div style={{ height: '100%', width: `${gauges.avancement}%`, background: 'var(--info)', transition: 'width 0.5s' }}></div>
+                          <div style={{ height: '100%', width: `${gameState.gauges.avancement}%`, background: 'var(--info)', transition: 'width 0.5s' }}></div>
                         </div>
                       </div>
                       <div>
-                        <div style={{ marginBottom: '10px', fontWeight: '600' }}>⚠️ Résistance : {gauges.resistance}%</div>
+                        <div style={{ marginBottom: '10px', fontWeight: '600' }}>⚠️ Résistance : {gameState.gauges.resistance}%</div>
                         <div style={{ height: '20px', background: '#e0e0e0', borderRadius: '10px', overflow: 'hidden' }}>
-                          <div style={{ height: '100%', width: `${gauges.resistance}%`, background: 'var(--danger)', transition: 'width 0.5s' }}></div>
+                          <div style={{ height: '100%', width: `${gameState.gauges.resistance}%`, background: 'var(--danger)', transition: 'width 0.5s' }}></div>
                         </div>
                       </div>
                     </div>
@@ -1118,11 +1047,11 @@
                   {EVENTS.map(event => (
                     <button
                       key={event.id}
-                      className={`event-btn ${triggeredEvents.includes(event.id) ? 'triggered' : ''}`}
+                      className={`event-btn ${gameState.triggeredEvents.includes(event.id) ? 'triggered' : ''}`}
                       onClick={() => triggerEvent(event.id)}
-                      disabled={triggeredEvents.includes(event.id)}
+                      disabled={gameState.triggeredEvents.includes(event.id)}
                     >
-                      {triggeredEvents.includes(event.id) ? '✓ ' : ''}{event.title}
+                      {event.icon} {gameState.triggeredEvents.includes(event.id) ? '✓ ' : ''}{event.title}
                     </button>
                   ))}
                 </div>
@@ -1158,44 +1087,56 @@
                 ADMR CHANGE LAB
               </h1>
               <p style={{ fontSize: '1.5em', opacity: '0.9' }}>
-                Session {sessionCode} • Phase {phase}/5
+                Session {sessionCode} • Phase {gameState.phase}/5
               </p>
             </div>
 
             <div className="timer" style={{ color: 'white', fontSize: '5em' }}>
-              {formatTime(timeRemaining)}
+              {formatTime(gameState.timeRemaining)}
             </div>
 
             <div className="gauge-container">
               <div className="gauge">
                 <div className="gauge-label">💚 Confiance</div>
                 <div className="gauge-bar">
-                  <div className="gauge-fill" style={{ width: `${gauges.confiance}%`, background: 'var(--success)' }}></div>
+                  <div className="gauge-fill" style={{ width: `${gameState.gauges.confiance}%`, background: 'var(--success)' }}></div>
                 </div>
-                <div className="gauge-value">{gauges.confiance}%</div>
+                <div className="gauge-value">{gameState.gauges.confiance}%</div>
               </div>
               <div className="gauge">
                 <div className="gauge-label">📈 Avancement</div>
                 <div className="gauge-bar">
-                  <div className="gauge-fill" style={{ width: `${gauges.avancement}%`, background: 'var(--info)' }}></div>
+                  <div className="gauge-fill" style={{ width: `${gameState.gauges.avancement}%`, background: 'var(--info)' }}></div>
                 </div>
-                <div className="gauge-value">{gauges.avancement}%</div>
+                <div className="gauge-value">{gameState.gauges.avancement}%</div>
               </div>
               <div className="gauge">
                 <div className="gauge-label">⚠️ Résistance</div>
                 <div className="gauge-bar">
-                  <div className="gauge-fill" style={{ width: `${gauges.resistance}%`, background: 'var(--danger)' }}></div>
+                  <div className="gauge-fill" style={{ width: `${gameState.gauges.resistance}%`, background: 'var(--danger)' }}></div>
                 </div>
-                <div className="gauge-value">{gauges.resistance}%</div>
+                <div className="gauge-value">{gameState.gauges.resistance}%</div>
               </div>
             </div>
 
-            {triggeredEvents.length > 0 && (
-              <div className="vote-results">
-                <div className="vote-title">📢 Dernier événement</div>
-                <p style={{ fontSize: '1.2em', opacity: '0.9' }}>
-                  {EVENTS.find(e => e.id === triggeredEvents[triggeredEvents.length - 1])?.description}
-                </p>
+            {gameState.currentEvent && (
+              <div className="event-display">
+                <div className="event-icon">{gameState.currentEvent.icon}</div>
+                <div className="event-title">{gameState.currentEvent.title}</div>
+                
+                <div className="event-announcement">
+                  <strong>📢 Annonce :</strong><br/><br/>
+                  {gameState.currentEvent.announcement}
+                </div>
+
+                <div className="event-impacts">
+                  <div className="event-impacts-title">⚡ Impacts concrets terrain :</div>
+                  <ul className="event-impacts-list">
+                    {gameState.currentEvent.impacts.map((impact, idx) => (
+                      <li key={idx}>• {impact}</li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             )}
           </div>
@@ -1205,7 +1146,7 @@
       return null;
     }
 
-    // Composant Carte de Rôle
+    // Composant Carte de Rôle (identique à la version précédente)
     function RoleCard({ role, missions, toggleMission }) {
       const roleData = ROLES[role];
 
@@ -1576,7 +1517,6 @@
       );
     }
 
-    // Rendu de l'application
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<App />);
   </script>
